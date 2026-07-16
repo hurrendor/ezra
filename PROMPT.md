@@ -3,8 +3,7 @@ Task management utility
 
 # Task Management Prompt
 
-Please use README.md, DESIGN.md, the wireframes (TODO: FILENAME) and existing folder and code infrastructure to update the code to match requirements for this
-simple task management utility using .NET Core, SQLLite with EFCore, and React.
+Please use README.md, DESIGN.md existing folder and code infrastructure to update the code to match requirements for this simple task management utility using .NET Core, SQLLite with EFCore, and React.
 
 ## Core Workflow
 1. Review the docs.

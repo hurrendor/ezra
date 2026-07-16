@@ -16,7 +16,7 @@ As a user, I can
 
 ## UI
 ### UI Description 
-- There are 3 columns - "To-do", "In progress", "Done"
+- There are 3 columns - "To-Do", "In Progress", "Done"
 - A task (title, description, and status) can be added, updated and deleted
 - Tasks can be sorted by a user defined order (numerical)
 - Urgent tasks can be 'flagged' and have a visual cue
