@@ -1,12 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This describes the pre-migration state. See PROMPT.md for the target architecture (EF Core, resource-based REST routes, full Task/Label schema) this codebase is being migrated toward. file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 
 ## Overview
 
 Ezra is a task-management app split into two independently-run projects:
 
-- `backend/` — ASP.NET Core Minimal API (`Ezra.Api`, .NET 10), talking to SQLite via raw `Microsoft.Data.Sqlite` (no EF Core / ORM).
+- `backend/` — ASP.NET Core Minimal API (`Ezra.Api`), talking to SQLite via raw `Microsoft.Data.Sqlite` (no EF Core / ORM).
 - `frontend/` — React 19 SPA built with Vite 8, linted with oxlint.
 
 The two are not wired together yet (no dev proxy, no fetch calls in the UI) — the frontend is boilerplate and the backend exposes a `/api/todos` endpoint. Connecting them is expected work.
