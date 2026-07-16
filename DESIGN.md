@@ -14,17 +14,21 @@ As a user, I can
 4. delete a task
 5. come back to the session later and recover my previous sessions' data
 
-### UI
-#### UI Description 
+## UI
+### UI Description 
 - There are 3 columns - "To-do", "In progress", "Done"
-- A task can be added, updated and deleted
-- Task (title, description, and status) can be updated
+- A task (title, description, and status) can be added, updated and deleted
 - Tasks can be sorted by a user defined order (numerical)
 - Urgent tasks can be 'flagged' and have a visual cue
 
-#### Features
-On task or label change, the UI will send a new POST request to the server.
+### Features
+- A task status can be updated by dragging the task to the updated header.
 
+- On task or label change, the UI will send a new POST request to the server.
+
+## Backend
+New tasks are mapped and added to dbo.Tasks.
+Task order uses gap-based ordering (space new items by 1000) to allow for short to medium term re-ordering. At some point, this may need to be updated.
 ### API
 REST/resource-based API design for HTTP status codes.
 
@@ -41,25 +45,28 @@ PUT /labels/{id}
 PATCH /labels/{id}
 DELETE /labels/{id}
 
-### Backend
-New tasks are mapped and added to dbo.Tasks.
-Task order uses gap-based ordering (space new items by 1000) to allow for short to medium term re-ordering. At some point, this may need to be updated. 
 
-### Data table structure
+ 
+### Data table structures
+
+-- org.SessionRecords
+--- GUID          UNIQUEIDENTIFIER
+--- createdDate   DATETIME
+--- userSortOrder NVARCHAR(50)
 
 -- dbo.Tasks
 --- GUID          UNIQUEIDENTIFIER
 --- createdDate   DATETIME
 --- modifiedDate  DATETIME
 --- status        TEXT
---- title         VARCHAR()
+--- title         NVARCHAR()
 --- description   TEXT
 --- order         INT
 --- isFlagged     BOOLEAN
 
 -- dbo.Labels
 --- GUID          UNIQUEIDENTIFIER
---- description   VARCHAR()
+--- description   NVARCHAR()
 --- order         INT
 
 -- dbo.Labels2Tasks
@@ -75,8 +82,8 @@ Task order uses gap-based ordering (space new items by 1000) to allow for short 
 - A task label can be added, updated and deleted
 - Closing a task triggers an undo prompt
 - Tasks can be sorted by label, "most recent", and numerical sorting
-- Tasks can be dragged to the next progress section
 - Clicking a task opens up a more detailed view
+  - A task status can be updated by dragging the task to the updated header.
 - Tasks can be moved by clicking the task and updating a drop-down option
 - The "done" section can be cleared out
 - Time blocking can be added as a detail
