@@ -30,3 +30,6 @@ Thumbs.db
 *.db
 *.db-shm
 *.db-wal
+frontend/.env
+backend/.env
+.claude/*

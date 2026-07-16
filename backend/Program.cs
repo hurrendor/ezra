@@ -1,57 +1,75 @@
-using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=ezra.db";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=tasks.db";
+builder.Services.AddDbContext<TaskDbContext>(opt =>
+    opt.UseSqlite(connectionString));
 
-InitializeDatabase(connectionString);
+InitializeDatabase(builder.Services, connectionString);
 
 var app = builder.Build();
-
 app.MapGet("/", () => Results.Ok(new { message = "Ezra API is running" }));
 
-app.MapGet("/api/todos", () =>
+app.MapGet("/api/todos", async (TaskDbContext db) =>
 {
-    using var connection = new SqliteConnection(connectionString);
-    connection.Open();
-
-    using var command = connection.CreateCommand();
-    command.CommandText = "SELECT id, title, is_done FROM todos ORDER BY id;";
-
-    using var reader = command.ExecuteReader();
-    var todos = new List<TodoItem>();
-
-    while (reader.Read())
-    {
-        todos.Add(new TodoItem(
-            reader.GetInt64(0),
-            reader.GetString(1),
-            reader.GetInt64(2) == 1));
-    }
+    var todos = await db.Tasks
+        .OrderBy(todo => todo.Id)
+        .ToListAsync();
 
     return Results.Ok(todos);
 });
 
 app.Run();
 
-static void InitializeDatabase(string connectionString)
+static void InitializeDatabase(IServiceCollection services, string connectionString)
 {
-    using var connection = new SqliteConnection(connectionString);
-    connection.Open();
+    var options = new DbContextOptionsBuilder<TaskDbContext>()
+        .UseSqlite(connectionString)
+        .Options;
 
-    using var command = connection.CreateCommand();
-    command.CommandText = @"
-        CREATE TABLE IF NOT EXISTS todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            is_done INTEGER NOT NULL DEFAULT 0
-        );
+    using var db = new TaskDbContext(options);
+    db.Database.EnsureCreated();
 
-        INSERT INTO todos (title, is_done)
-        SELECT 'First task', 0
-        WHERE NOT EXISTS (SELECT 1 FROM todos);
-    ";
+    if (!db.Tasks.Any())
+    {
+        db.Tasks.Add(new TodoItem
+        {
+            Title = "First task",
+            IsDone = false
+        });
 
-    command.ExecuteNonQuery();
+        db.SaveChanges();
+    }
 }
 
-record TodoItem(long Id, string Title, bool IsDone);
+class TaskDbContext(DbContextOptions<TaskDbContext> options) : DbContext(options)
+{
+    public DbSet<TodoItem> Todos => Set<TodoItem>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TodoItem>(entity =>
+        {
+            entity.ToTable("todos");
+            entity.HasKey(todo => todo.Id);
+
+            entity.Property(todo => todo.Id)
+                .HasColumnName("id");
+
+            entity.Property(todo => todo.Title)
+                .HasColumnName("title")
+                .IsRequired();
+
+            entity.Property(todo => todo.IsDone)
+                .HasColumnName("is_done")
+                .HasDefaultValue(false);
+        });
+    }
+}
+
+class TodoItem
+{
+    public long Id { get; set; }
+    public required string Title { get; set; }
+    public bool IsDone { get; set; }
+}

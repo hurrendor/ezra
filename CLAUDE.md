@@ -25,7 +25,7 @@ Frontend (run from `frontend/`):
 
 ## Architecture notes
 
-- **Database access is hand-written SQL.** `backend/Program.cs` opens a `SqliteConnection` per request and issues raw `CommandText`. There is no repository layer, migrations tool, or model-mapping framework. `InitializeDatabase` runs `CREATE TABLE IF NOT EXISTS` (plus a seed row) at startup — schema changes go here, not in a migrations folder. The SQLite file (`ezra.db`) is created next to the running process.
+- **Database access is hand-written SQL.** `backend/Program.cs` opens a `SqliteConnection` per request and issues raw `CommandText`. There is no repository layer, migrations tool, or model-mapping framework. `InitializeDatabase` runs `CREATE TABLE IF NOT EXISTS` (plus a seed row) at startup — schema changes go here, not in a migrations folder. The SQLite file (`tasks.db`) is created next to the running process.
 - **Everything backend lives in `Program.cs`** for now: endpoint definitions, DB init, and the `TodoItem` record. Note the DB column names are snake_case (`is_done`) while the C# record is PascalCase — the mapping is manual in the reader loop.
-- **Connection string** comes from configuration key `ConnectionStrings:DefaultConnection`, falling back to `Data Source=ezra.db`.
+- **Connection string** comes from configuration key `ConnectionStrings:DefaultConnection`, falling back to `Data Source=tasks.db`.
 - **Frontend lint rules** (`frontend/.oxlintrc.json`) enforce React rules-of-hooks as an error; `only-export-components` is a warning with `allowConstantExport`.
