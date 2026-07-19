@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      # SQLite file persisted on the named volume; migrations apply at startup.
+      - ConnectionStrings__DefaultConnection=Data Source=/data/tasks.db
+      # Seed sample onboarding tasks into a fresh DB (build option per README).
+      - Database__Seed=true
+    volumes:
+      - ezra-data:/data
+    ports:
+      # Expose the API directly for debugging (host 5195 -> container 8080).
+      - "5195:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      # App served at http://localhost:8080 (nginx :80).
+      - "8080:80"
+
+volumes:
+  ezra-data:

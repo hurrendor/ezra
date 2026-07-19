@@ -1,0 +1,336 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_source": "ezra.api",
+  "resources": [
+    {
+      "_id": "wrk_ezra",
+      "_type": "workspace",
+      "name": "Ezra API",
+      "description": "Task-management API (Ezra.Api). Base URL via {{ base_url }} environment var."
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_ezra",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:5195",
+        "task_id": 1,
+        "label_id": 1
+      }
+    },
+
+    {
+      "_id": "fld_tasks",
+      "_type": "request_group",
+      "parentId": "wrk_ezra",
+      "name": "Tasks",
+      "metaSortKey": -100
+    },
+    {
+      "_id": "req_tasks_list",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "GET /tasks (list all)",
+      "method": "GET",
+      "url": "{{ base_url }}/tasks",
+      "metaSortKey": -100
+    },
+    {
+      "_id": "req_tasks_get",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "GET /tasks/{id}",
+      "method": "GET",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "metaSortKey": -99
+    },
+    {
+      "_id": "req_tasks_get_404",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "GET /tasks/999999 (404)",
+      "method": "GET",
+      "url": "{{ base_url }}/tasks/999999",
+      "metaSortKey": -98
+    },
+    {
+      "_id": "req_tasks_post_min",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "POST /tasks (minimal - title only)",
+      "method": "POST",
+      "url": "{{ base_url }}/tasks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Buy milk\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -97
+    },
+    {
+      "_id": "req_tasks_post_full",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "POST /tasks (full body)",
+      "method": "POST",
+      "url": "{{ base_url }}/tasks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Write API integration tests\",\n  \"description\": \"Cover POST /tasks happy path and validation errors\",\n  \"status\": \"InProgress\",\n  \"isFlagged\": true,\n  \"labelIds\": [1, 2]\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -96
+    },
+    {
+      "_id": "req_tasks_post_done",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "POST /tasks (status Done)",
+      "method": "POST",
+      "url": "{{ base_url }}/tasks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Ship v1.0.0\",\n  \"description\": \"Tag and release\",\n  \"status\": \"Done\",\n  \"isFlagged\": false\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -95
+    },
+    {
+      "_id": "req_tasks_post_400",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "POST /tasks (400 - blank title)",
+      "method": "POST",
+      "url": "{{ base_url }}/tasks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"   \"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -94
+    },
+    {
+      "_id": "req_tasks_post_badlabel",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "POST /tasks (400 - bad labelId)",
+      "method": "POST",
+      "url": "{{ base_url }}/tasks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Task with missing label\",\n  \"labelIds\": [999999]\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -93
+    },
+    {
+      "_id": "req_tasks_patch_fields",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "PATCH /tasks/{id} (edit fields)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Updated title\",\n  \"description\": \"Updated description\",\n  \"isFlagged\": true\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -92
+    },
+    {
+      "_id": "req_tasks_patch_status",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "PATCH /tasks/{id} (move column - status only)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"InProgress\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -91
+    },
+    {
+      "_id": "req_tasks_patch_reorder",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "PATCH /tasks/{id} (reorder after task 2)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"Todo\",\n  \"reorder\": true,\n  \"afterTaskId\": 2\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -90
+    },
+    {
+      "_id": "req_tasks_patch_top",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "PATCH /tasks/{id} (reorder to top)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"Todo\",\n  \"reorder\": true,\n  \"afterTaskId\": null\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -89
+    },
+    {
+      "_id": "req_tasks_patch_labels",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "PATCH /tasks/{id} (replace labels)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"labelIds\": [1]\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -88
+    },
+    {
+      "_id": "req_tasks_delete",
+      "_type": "request",
+      "parentId": "fld_tasks",
+      "name": "DELETE /tasks/{id}",
+      "method": "DELETE",
+      "url": "{{ base_url }}/tasks/{{ task_id }}",
+      "metaSortKey": -87
+    },
+
+    {
+      "_id": "fld_labels",
+      "_type": "request_group",
+      "parentId": "wrk_ezra",
+      "name": "Labels",
+      "metaSortKey": -50
+    },
+    {
+      "_id": "req_labels_list",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "GET /labels (list all)",
+      "method": "GET",
+      "url": "{{ base_url }}/labels",
+      "metaSortKey": -100
+    },
+    {
+      "_id": "req_labels_get",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "GET /labels/{id}",
+      "method": "GET",
+      "url": "{{ base_url }}/labels/{{ label_id }}",
+      "metaSortKey": -99
+    },
+    {
+      "_id": "req_labels_get_404",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "GET /labels/999999 (404)",
+      "method": "GET",
+      "url": "{{ base_url }}/labels/999999",
+      "metaSortKey": -98
+    },
+    {
+      "_id": "req_labels_post",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "POST /labels",
+      "method": "POST",
+      "url": "{{ base_url }}/labels",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Urgent\",\n  \"order\": 1000\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -97
+    },
+    {
+      "_id": "req_labels_post_min",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "POST /labels (name only)",
+      "method": "POST",
+      "url": "{{ base_url }}/labels",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Home\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -96
+    },
+    {
+      "_id": "req_labels_post_400",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "POST /labels (400 - blank name)",
+      "method": "POST",
+      "url": "{{ base_url }}/labels",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"   \"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -95
+    },
+    {
+      "_id": "req_labels_patch",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "PATCH /labels/{id}",
+      "method": "PATCH",
+      "url": "{{ base_url }}/labels/{{ label_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Renamed label\",\n  \"order\": 2000\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "metaSortKey": -94
+    },
+    {
+      "_id": "req_labels_delete",
+      "_type": "request",
+      "parentId": "fld_labels",
+      "name": "DELETE /labels/{id}",
+      "method": "DELETE",
+      "url": "{{ base_url }}/labels/{{ label_id }}",
+      "metaSortKey": -93
+    }
+  ]
+}

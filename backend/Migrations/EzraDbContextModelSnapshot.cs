@@ -31,7 +31,6 @@ namespace Ezra.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
                     b.ToTable("labels", (string)null);
                 });
 

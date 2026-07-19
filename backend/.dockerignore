@@ -1,0 +1,7 @@
+bin/
+obj/
+Ezra.Api.Tests/bin/
+Ezra.Api.Tests/obj/
+*.db
+*.db-shm
+*.db-wal
