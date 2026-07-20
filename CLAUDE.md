@@ -48,7 +48,6 @@ Settled decisions (see README for full requirements):
 
 - MUI 3-column flexbox board in `App.tsx`. Each task card: title header, optional description, red flag icon when `isFlagged`, delete icon, label chips (chip click opens add/remove dropdown), status dropdown to move between columns.
 - Inline edit: clicking title/description turns it editable; on click-off, if changed, send an update API call.
-- **Drag-and-drop reordering is a documented deferral** — status changes go through the dropdown only.
 
 ## Testing
 

@@ -101,7 +101,7 @@ export default function App() {
       <AppBar position="static" elevation={1}>
         <Toolbar>
           <Typography variant="h6" component="h1">
-            Ezra
+            Ezra - Task management
           </Typography>
         </Toolbar>
       </AppBar>

@@ -1,46 +1,40 @@
 # Background / Context
-Task management utility for an individual SWE's day-to-day, built as a take-home assessment. Priorities: clean architecture, production-minded MVP, clear tradeoffs — not over-engineering.
 
-# Task Management Prompt
+Task management utility for an individual SWE's day-to-day, built as a take-home assessment.
 
-Please use README.md, DESIGN.md and existing folder/code infrastructure to update the code to match requirements for this task management utility using .NET Core, SQLite with EF Core, and React.
+## Run
 
-## Core Workflow
-1. Review the docs.
-2. Review the code already present.
-3. Make alterations to the code to correct any data that doesn't match the requirements and docs.
-   a. Run and verify frontend/ builds and starts; report actual command output.
-   b. Run and verify backend/ builds and starts; report actual command output.
+   /backend `dotnet run`
+- builds on http://localhost:5195
+  /frontend `npm install` `npm build`
+- builds to http://localhost:5173/
 
-## API Design
-- Use resource-based REST conventions
-- Task reordering: implement sparse integer ordering (gap of 1000 between tasks). On move, set order to the midpoint of the new neighbors; if no gap remains, renumber the affected column. Expose via `PATCH /tasks/{id}` with a target position (e.g. previous/next task id), computing the new order server-side.
-- Include input validation and consistent error response shape (e.g. `{ "error": "message" }` with appropriate HTTP status codes) for all endpoints.
-- Add basic request logging (method, path, status, duration).
+## Prompt Given
 
-## Frontend
-Use DESIGN.md as reference.
+Build a small to-do task management API and frontend.
 
-Structurally, each list item contains:
-- a header tag (data: `title`)
-- an optional description (data: `description`)
-- a small red icon if the task is flagged (data: `isFlagged`)
-- a 'close/delete' icon to delete the task
-- label(s), shown as inline chips; clicking a chip opens a small dropdown to add/remove labels for that task
-- a status control (dropdown)
-- on click action:
-   - clicking the header or description turns it into an active/editable field
-   - on click-off, if there are changes, send an update API call
+## Interpretation
 
-Provide unit tests for the production MVP.
+A task management tool for an individual SWE day-to-day that can grow with demand and minimal maintenance.
 
-## Backend
-- Provide build options to:
-   - Seed the database with a few sample tasks for generic tech company onboarding.
-   - Ship an empty database schema for the UI to fill.
-- Provide unit tests for the production MVP.
+## Approach
 
-## Docker
-Set up a Docker config to ship this as two services (frontend, backend) via docker-compose, each with its own Dockerfile. Backend Dockerfile should apply EF Core migrations on container start.
+1. Ideate Sitting down to review the requirements and writing out interpretations and features. Narrowing features to
+   MVP
+2. Design Front-end UI design considerations, workflow reviews, wireframe mockups
+3. Plan Create a plan for AI agents to run that incorporates all necessary requirements. Work with Claude to review the
+   plan against the test requirements to align plan intentions and confirm steps.
+4. Execute Run the AI agent PROMPT.md with Claude CLI
+5. Test Use for day planning Get it to run
+6. Get it right (MVP)
+7. Get it fast
 
+## Technical Reasonings
+
+SQLite with EFCore - Serverless relational database in a cross-platform file EF Core adds ORM C# classes to database
+tables and properties to columns React - Familiarity, flow of components
+
+## Implementation
+
+See PROMPT.md, DESIGN.md
 
