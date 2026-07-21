@@ -13,10 +13,11 @@
 As a user, I can
 
 1. add a new task a. to "To-do"
-   b. to "In progress"
+   1b. to "In progress"
 2. update a task b. change state from "todo" to "in progress"
-   a. change state from "in progress" to "done"
-   c. change order of the task d. change flag (isFlagged) to true or false
+   2a. change state from "in progress" to "done"
+   2b. change order of the task 
+   2c. change flag (isFlagged) to true or false
 3. save tasks for persistent data on task updates
 4. delete a task
 5. come back to the session later and recover my previous sessions' data
@@ -53,24 +54,44 @@ short to medium term re-ordering. At some point, this may need to be updated.
 
 #### Task management
 
-POST /tasks PUT /tasks/{id} PATCH /tasks/{id} DELETE /tasks/{id}
+POST /tasks
+PUT /tasks/{id}
+PATCH /tasks/{id}
+DELETE /tasks/{id}
 
 #### Label management
-
-POST /labels PUT /labels/{id} PATCH /labels/{id} DELETE /labels/{id}
+POST /labels
+PUT /labels/{id}
+PATCH /labels/{id}
+DELETE /labels/{id}
 
 ### Data table structures
 
--- org.SessionRecords --- GUID UNIQUEIDENTIFIER --- createdDate DATETIME --- userSortOrder NVARCHAR (50)
+-- org.SessionRecords
+--- GUID          UNIQUEIDENTIFIER
+--- createdDate   DATETIME
+--- userSortOrder NVARCHAR(50)
 
--- dbo.Tasks --- GUID UNIQUEIDENTIFIER --- createdDate DATETIME --- modifiedDate DATETIME --- status TEXT --- title
-NVARCHAR ()
---- description TEXT --- order INT --- isFlagged BOOLEAN
+-- dbo.Tasks
+--- GUID          UNIQUEIDENTIFIER
+--- createdDate   DATETIME
+--- modifiedDate  DATETIME
+--- status        TEXT
+--- title         NVARCHAR()
+--- description   TEXT
+--- order         INT
+--- isFlagged     BOOLEAN
 
--- dbo.Labels --- GUID UNIQUEIDENTIFIER --- description NVARCHAR ()
---- order INT
+-- dbo.Labels
+--- GUID          UNIQUEIDENTIFIER
+--- description   NVARCHAR()
+--- order         INT
 
--- dbo.Labels2Tasks --- GUID UNIQUEIDENTIFIER --- TaskGUID UNIQUEIDENTIFIER --- LabelGUID UNIQUEIDENTIFIER
+-- dbo.Labels2Tasks
+--- GUID          UNIQUEIDENTIFIER
+--- TaskGUID      UNIQUEIDENTIFIER
+--- LabelGUID     UNIQUEIDENTIFIER
+
 
 # Out of Scope
 

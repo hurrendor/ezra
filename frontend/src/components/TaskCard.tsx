@@ -22,8 +22,6 @@ interface TaskCardProps {
   onUpdate: (id: number, patch: UpdateTaskRequest) => void
   onDelete: (id: number) => void
   onCreateLabel: (name: string) => Promise<Label | undefined>
-  // Reorder within the column: place the dragged task before/after this one.
-  // Omitted in isolation (e.g. tests); drag-to-reorder is simply inert then.
   onDropRelative?: (draggedId: number, anchorId: number, place: 'before' | 'after') => void
 }
 
