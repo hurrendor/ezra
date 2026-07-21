@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
@@ -9,6 +10,7 @@ import FormControl from '@mui/material/FormControl'
 import CloseIcon from '@mui/icons-material/Close'
 import FlagIcon from '@mui/icons-material/Flag'
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 import { EditableText } from './EditableText'
 import { LabelChips } from './LabelChips'
 import { STATUSES, STATUS_LABELS } from '../api/types'
@@ -20,9 +22,22 @@ interface TaskCardProps {
   onUpdate: (id: number, patch: UpdateTaskRequest) => void
   onDelete: (id: number) => void
   onCreateLabel: (name: string) => Promise<Label | undefined>
+  // Reorder within the column: place the dragged task before/after this one.
+  // Omitted in isolation (e.g. tests); drag-to-reorder is simply inert then.
+  onDropRelative?: (draggedId: number, anchorId: number, place: 'before' | 'after') => void
 }
 
-export function TaskCard({ task, allLabels, onUpdate, onDelete, onCreateLabel }: TaskCardProps) {
+export function TaskCard({
+  task,
+  allLabels,
+  onUpdate,
+  onDelete,
+  onCreateLabel,
+  onDropRelative,
+}: TaskCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [dropSide, setDropSide] = useState<'before' | 'after' | null>(null)
+
   const toggleLabel = (labelId: number, attach: boolean) => {
     const ids = new Set(task.labels.map((l) => l.id))
     if (attach) ids.add(labelId)
@@ -30,10 +45,63 @@ export function TaskCard({ task, allLabels, onUpdate, onDelete, onCreateLabel }:
     onUpdate(task.id, { labelIds: [...ids] })
   }
 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', String(task.id))
+    e.dataTransfer.effectAllowed = 'move'
+    if (cardRef.current) e.dataTransfer.setDragImage(cardRef.current, 0, 0)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!onDropRelative) return
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'move'
+    const rect = e.currentTarget.getBoundingClientRect()
+    setDropSide(e.clientY < rect.top + rect.height / 2 ? 'before' : 'after')
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setDropSide(null)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    if (!onDropRelative) return
+    e.preventDefault()
+    e.stopPropagation()
+    const side = dropSide ?? 'before'
+    setDropSide(null)
+    const draggedId = Number(e.dataTransfer.getData('text/plain'))
+    if (draggedId) onDropRelative(draggedId, task.id, side)
+  }
+
   return (
-    <Card variant="outlined" sx={{ '&:hover': { boxShadow: 2 } }}>
+    <Card
+      ref={cardRef}
+      variant="outlined"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      sx={{
+        '&:hover': { boxShadow: 2 },
+        borderTop: dropSide === 'before' ? '2px solid' : undefined,
+        borderBottom: dropSide === 'after' ? '2px solid' : undefined,
+        borderTopColor: dropSide === 'before' ? 'primary.main' : undefined,
+        borderBottomColor: dropSide === 'after' ? 'primary.main' : undefined,
+      }}
+    >
       <CardContent sx={{ pb: 1.5, '&:last-child': { pb: 1.5 } }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.5 }}>
+          <Tooltip title="Drag to another column">
+            <IconButton
+              size="small"
+              aria-label="drag task"
+              draggable
+              onDragStart={handleDragStart}
+              sx={{ cursor: 'grab', touchAction: 'none' }}
+            >
+              <DragIndicatorIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             <EditableText
               value={task.title}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -27,12 +28,51 @@ export function Column({
   onDelete,
   onCreateLabel,
 }: ColumnProps) {
+  const [dragOver, setDragOver] = useState(false)
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (!dragOver) setDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOver(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const id = Number(e.dataTransfer.getData('text/plain'))
+    if (!id || tasks.some((t) => t.id === id)) return
+    onUpdate(id, { status })
+  }
+
+  const handleDropRelative = (draggedId: number, anchorId: number, place: 'before' | 'after') => {
+    if (draggedId === anchorId) return
+    const rest = tasks.filter((t) => t.id !== draggedId)
+    const idx = rest.findIndex((t) => t.id === anchorId)
+    if (idx < 0) return
+    const afterTaskId = place === 'after' ? anchorId : idx > 0 ? rest[idx - 1].id : null
+    onUpdate(draggedId, { status, reorder: true, afterTaskId })
+  }
+
   return (
     <Paper
       elevation={0}
-      sx={{ bgcolor: 'grey.100', p: 1.5, borderRadius: 2, height: '100%' }}
+      sx={{
+        bgcolor: dragOver ? 'action.hover' : 'grey.100',
+        outline: dragOver ? '2px dashed' : 'none',
+        outlineColor: 'primary.main',
+        p: 1.5,
+        borderRadius: 2,
+        height: '100%',
+      }}
       aria-label={`${STATUS_LABELS[status]} column`}
       component="section"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, px: 0.5 }}>
         <Typography variant="h6" component="h2">
@@ -54,6 +94,7 @@ export function Column({
             onUpdate={onUpdate}
             onDelete={onDelete}
             onCreateLabel={onCreateLabel}
+            onDropRelative={handleDropRelative}
           />
         ))}
       </Stack>
